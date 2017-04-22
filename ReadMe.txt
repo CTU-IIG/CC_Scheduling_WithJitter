@@ -1,6 +1,6 @@
 The program CC_Scheduling_WithJitter is distributed under the terms of the GNU General Public License.
 
-Authors: Anna Minaeva (minaeann@fel.cvut.cz), Dakshina Dasari (Dakshina.Dasari@de.bosch.com), Zdenek Hanzalek (hanzalek@fel.cvut.cz) and Benny Akesson (benny.akesson@gmail.com)
+Authors: Anna Minaeva (minaeann@fel.cvut.cz), Benny Akesson (benny.akesson@gmail.com), Zdenek Hanzalek (hanzalek@fel.cvut.cz) and Dakshina Dasari (Dakshina.Dasari@de.bosch.com)
 
 This is the implementation of the ILP, SMT and 3-LS heuristic approaches on the co-scheduling problem of communication and computation with jitter requirements. 
 
@@ -10,7 +10,7 @@ To run it, IBM ILOG CPLEX Optimization Studio library must be installed and adde
 
 —————————————————————————————————————————————————————————————————————
 
-The problem instances are in the folder “instances/”, where there are folders named Set N, N = 1,2,3,4,5 and the folder Case study. They contain instances for Sets 1 to 5 and the case study.
+The problem instances are in the folder “instances/”, where there are folders named Set N, N = 1,2,3,4,5,6 and the folder Case study. They contain instances for Sets 1 to 5 and the case study.
 
 ——————————————————————————————————————————————————————————————————————
 
@@ -20,4 +20,4 @@ If you find this software useful for your research or you create an algorithm
 based on this software, please cite our original paper in your publication list.
 
 
-Minaeva, A - Dasari, D. - Hanzálek, Z. - Akesson, B: Time-Triggered Co-Scheduling of Computation and Communication with Jitter Requirements.
+Minaeva, A - Akesson, B - Hanzálek, Z. - Dasari, D. : Time-Triggered Co-Scheduling of Computation and Communication with Jitter Requirements.
