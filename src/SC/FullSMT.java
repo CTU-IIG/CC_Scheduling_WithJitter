@@ -431,7 +431,7 @@ public class FullSMT {
             int[] STime = new int[probInst.getTotalNumOfJobs()];
             for (int i = 0; i < probInst.getTotalNumOfJobs(); i++){
                 STime[i] = ((IntNum) m.evaluate(startTime[i], false)).getInt() % HP;
-                System.out.println(STime[i]);
+                //System.out.println(STime[i]);
             }
             Solution sol = new Solution(STime, probInst, probInst.isZJ());
             

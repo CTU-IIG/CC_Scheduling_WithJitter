@@ -6,11 +6,11 @@ This is the implementation of the ILP, SMT and 3-LS heuristic approaches on the 
 
 To run it, IBM ILOG CPLEX Optimization Studio library must be installed and added to the project (“cplex.jar”). Besides, the Z3 theorem prover must be installed and added to the project (“com.microsoft.z3.jar”). Moreover, Project Properties->Run->VM options should contain “-Djava.library.path="/Users/annaminaeva/Applications/IBM/ILOG/CPLEX_Studio126/cpoptimizer/bin/x86-64_osx":"/Users/annaminaeva/Applications/IBM/ILOG/CPLEX_Studio126/cplex/bin/x86-64_osx":"/Users/annaminaeva/git/z3/build"” or similar.
 
-“Main.java” contains main function and the implementation of all experimental environment.
+“CC_Scheduling_WithJitter.java” contains main function and the implementation of all experimental environment.
 
 —————————————————————————————————————————————————————————————————————
 
-The problem instances are in the folder “instances/”, where there are folders named Set N, N = 1,2,3,4,5,6 and the folder Case study. They contain instances for Sets 1 to 5 and the case study.
+The problem instances are in the folder “instances/”, where there are folders named Set N, N = 1,2,3,4,5 and the folder Case study. They contain instances for Sets 1 to 5 and the case study.
 
 ——————————————————————————————————————————————————————————————————————
 

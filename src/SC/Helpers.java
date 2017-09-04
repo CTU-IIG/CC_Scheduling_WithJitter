@@ -13,7 +13,7 @@ public class Helpers {
     //------------constants-------------
     public static final double EPS = 1.0E-4;
     public static final String outputFileForCplex = "outputCPLEX.txt";
-    public static final String outputFile = "outputSet4.txt";
+    public static final String outputFile = "output/output.txt";
     public static final String outputFileForZJExperiment = "outputExpWithDifPercentsOfZJActivities.txt";
     public static final String outputFileForExperimentWithDifPeriods = "outputExpWithDifPeriods.txt";
     public static final String CANUseCaseFile = "Use_case_CAN.txt";

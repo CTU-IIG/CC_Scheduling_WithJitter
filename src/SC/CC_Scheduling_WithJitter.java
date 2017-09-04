@@ -51,7 +51,7 @@ import java.util.List;
 
 public class CC_Scheduling_WithJitter {
     static final int MIN_NUMB_INSTANCES = 1; //solving starts from problem_instance_{MIN_NUMB_INSTANCES}
-    static final int MAX_NUMB_INSTANCES = 100; //solving ends with problem_instance_{MAX_NUMB_INSTANCES}
+    static final int MAX_NUMB_INSTANCES = 1; //solving ends with problem_instance_{MAX_NUMB_INSTANCES}
     static final int N_CORES_MAIN_EXP = 3;
     static final boolean IS_GIVEN_MAPPING = false; //set true if the mapping is apready done in the problem instances
     public static int TIME_LIMIT = 3000; // time limit for the ILP model
@@ -59,9 +59,9 @@ public class CC_Scheduling_WithJitter {
     static final boolean IS_JITTER_RELATIVE = true;
     
     // only one of the following parameters can be true
-    static final boolean IS_EXPERIMENT_WITH_DIF_PERCENTS_OF_ZJ_ACTS = true;
+    static final boolean IS_EXPERIMENT_WITH_DIF_PERCENTS_OF_ZJ_ACTS = false;
     static final boolean IS_EXPERIMENT_WITH_DIF_PERIODS = false;
-    static final boolean IS_USE_CASE = true; //if it's not use-case, it scales the processing time to the required utilization
+    static final boolean IS_USE_CASE = false; //if it's not use-case, it scales the processing time to the required utilization
     static final boolean IS_CAN_USE_CASE = false;
     
     static final boolean SOLVE_SUBMODEL_BY_ILP = true;
@@ -77,10 +77,10 @@ public class CC_Scheduling_WithJitter {
     static long startTime; //start time of each run on each instance 
     static int numOcc = 0;
     
-    //static final String instance = "instances/problem_instance8approx";
+    static final String instancePath = "instances/Set 2/problem_instance";
     //static final String instancePath = "/Users/annaminaeva/git/SC_problem_2016/SC problem Java/instances/problem_instance_CAN";
     //static final String instancePath = "/Users/annaminaeva/Dropbox/GeneratedModels/Set 6/problem_instance";
-    static final String instancePath = "/Users/annaminaeva/Dropbox/prace/SC problem related/instances/SET6/problem_instance6_";
+    //static final String instancePath = "/Users/annaminaeva/Dropbox/prace/SC problem related/instances/SET6/problem_instance6_";
     //static final String instancePath = "/Users/annaminaeva/Dropbox/prace/SC problem related/instances/Set 4/problem_instance";
     static final String dat = ".dat";
     static FileWriter writer;
@@ -370,7 +370,7 @@ public class CC_Scheduling_WithJitter {
                     }
                     for (opt_sol_method = 0; opt_sol_method < n_opt_solution_methods; opt_sol_method++) {
                         long currentRunTime = 0;
-                        for(double util_on_res = 0.3; util_on_res <= 1.01; util_on_res += 0.01) {
+                        for(double util_on_res = 0.7; util_on_res <= 1.01; util_on_res += 0.01) {
                             boolean result = PrepareProblemInstance(solve_with_zero_jitter, 
                                     util_on_res, instancePath + String.valueOf(t) + dat, N_CORES_MAIN_EXP);
                             if(!result){
