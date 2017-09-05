@@ -99,80 +99,7 @@ public class SubModel extends ILP_model{
             }
         }
     }
-    
-    private void obtainResourceIntervalsWithPreemption(int[][] boundsOnJobs, Activity act, List<List<List<Integer>>> intsOfResConstrsJobs){
-        int nUsedRes = act.getMapping() - 1;
-        int startPrevInt = 0;
-        int nJobs = act.getHP() / act.getPeriod();
-        for(int j = 0; j < nJobs; j++) {
-            //find interval for this job
-            int startInterval = startPrevInt;
-            boolean isStartIntPrevSet = false;
-            
-            for(int k = startInterval; k < schedActs.getIntsOfResConstrs().get(nUsedRes).size(); k++) {
-                int endCurInt = schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1);
-                if(j != nJobs - 1 && endCurInt > boundsOnJobs[j + 1][0] && !isStartIntPrevSet){
-                    startPrevInt = k;
-                    isStartIntPrevSet = true;
-                }
-                
-                if(boundsOnJobs[j][0] >= schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1)){
-                    // due to precedence constraints this interval should not be considered
-                    continue;
-                }
-
-                if(schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(0) < boundsOnJobs[j][1] + act.getProcTime()){
-                    intsOfResConstrsJobs.get(j).add(new ArrayList<>());
-                    int last = intsOfResConstrsJobs.get(j).size() - 1;
-                    intsOfResConstrsJobs.get(j).get(last).add(
-                            schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(0) - act.getProcTime());
-                    intsOfResConstrsJobs.get(j).get(last).add(
-                            schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1));
-                }
-
-                if(schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1) >= boundsOnJobs[j][1] + act.getProcTime()){
-                    /*startPrevInt = k;
-                    if(schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1) == boundsOnJobs[j][1] + activity.getProcTime()){
-                        startPrevInt = k + 1;
-                    }*/
-                    break;
-                }
-                
-            }
-            
-            if(!intsOfResConstrsJobs.get(j).isEmpty()){
-                concatenateIntervals(intsOfResConstrsJobs.get(j));
-            }
-        }
-        
-        // we need to add intervals of the first period to the last job due to the deadline extention
-        int nCurJob = nJobs - 1;
-        for (int i = 0; i < schedActs.getIntsOfResConstrs().get(nUsedRes).size(); i++) {
-            intsOfResConstrsJobs.get(nCurJob).add(
-                    Arrays.asList(
-                            schedActs.getIntsOfResConstrs().get(nUsedRes).get(i).get(0) - act.getProcTime() + act.getHP(),
-                            schedActs.getIntsOfResConstrs().get(nUsedRes).get(i).get(1) + act.getHP()
-                    )
-            ); 
-        }
-        
-        if(!intsOfResConstrsJobs.get(nCurJob).isEmpty()){
-            // move start interval to the end if the start of first interval is 
-            // negative and it's an activity with 1 job
-            if(intsOfResConstrsJobs.get(nCurJob).get(0).get(0) < 0 && nJobs == 1){
-                intsOfResConstrsJobs.get(nCurJob).add(
-                        Arrays.asList(
-                                2 * act.getHP() + intsOfResConstrsJobs.get(nCurJob).get(0).get(0),
-                                2 * act.getHP()
-                        )
-                );
-            }
-            
-            concatenateIntervals(intsOfResConstrsJobs.get(nCurJob));
-        }
-       
-    }
-    
+  
     private void obtainResourceIntervals(int[][] boundsOnJobs, Activity act, List<List<List<Integer>>> intsOfResConstrsJobs){
         int nUsedRes = act.getMapping() - 1;
         int startPrevInt = 0;
@@ -191,7 +118,7 @@ public class SubModel extends ILP_model{
                     isStartIntPrevSet = true;
                 }
                 
-                if(boundsOnJobs[j][0] >= schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1)){
+                if(j * act.getPeriod() >= schedActs.getIntsOfResConstrs().get(nUsedRes).get(k).get(1)){
                     // due to precedence constraints this interval should not be considered
                     continue;
                 }
@@ -217,8 +144,11 @@ public class SubModel extends ILP_model{
             
             if(!intsOfResConstrsJobs.get(j).isEmpty()){
                 concatenateIntervals(intsOfResConstrsJobs.get(j));
+                if(-intsOfResConstrsJobs.get(j).get(0).get(0) + intsOfResConstrsJobs.get(j).get(0).get(1) >= act.getPeriod()){
+                    isFeasible = false;
+                }
             }
-        }
+        } 
         
         // we need to add intervals of the first period to the last job due to the deadline extention
         int nCurJob = nJobs - 1;
@@ -565,6 +495,10 @@ public class SubModel extends ILP_model{
     }
     
     public SubModel(Activity activity_, ScheduledActs schedActs_, boolean toBeSchedByILP) throws IloException{
+        if(activity_.getIdInArray() == 15){
+            System.out.println("");
+        }
+        
         toBeSolvedByILP = toBeSchedByILP;
         isFeasible = true;
         HP = activity_.getHP();
@@ -584,6 +518,14 @@ public class SubModel extends ILP_model{
         if(activity.getJitter() < activity.getSlack() - 2){
             int nJobsToSchedule = activity.getNumJobs();
             obtainResourceIntervals(boundsOnJobs, activity, intsOfResConstrsJobs);
+            
+            for (int i = 0; i < activity.getNumJobs(); i++) {
+                if(!intsOfResConstrsJobs.get(i).isEmpty() && intsOfResConstrsJobs.get(i).get(0).get(0) < boundsOnJobs[i][0] 
+                        && intsOfResConstrsJobs.get(i).get(0).get(1) >= boundsOnJobs[i][1]){
+                    isFeasible = false;
+                }
+            }
+            
             setSchedActsAndPeriodUsingExistingInts(activity,intsOfResConstrsJobs, boundsOnJobs);
             
             if(toBeSchedByILP){
@@ -621,13 +563,9 @@ public class SubModel extends ILP_model{
             }
         }
         else{
-            if(!CC_Scheduling_WithJitter.IS_PREEMPTION_ALLOWED_IN_HEURISTIC){
-                obtainResourceIntervals(boundsOnJobs, activity, intsOfResConstrsJobs);
-                setSchedActsAndPeriodUsingExistingInts(activity,intsOfResConstrsJobs, boundsOnJobs);
-            }
-            else{
-                obtainResourceIntervalsWithPreemption(boundsOnJobs, activity, intsOfResConstrsJobs);
-            }
+            obtainResourceIntervals(boundsOnJobs, activity, intsOfResConstrsJobs);
+            setSchedActsAndPeriodUsingExistingInts(activity,intsOfResConstrsJobs, boundsOnJobs);
+            
         }
         
         //solver.setParam(IloCplex.BooleanParam.PreInd, false);
@@ -710,34 +648,16 @@ public class SubModel extends ILP_model{
         return startTime;
     }
     
-    private double [] solveNZJWithPreemption(){
-        int nStartTimes = 0;
-        List<List<Integer>> sTimesArList = new ArrayList<>();
-        List<List<Integer>> intsOfActivityResource = schedActs.getIntsOfResConstrs().get(activity.getMapping() - 1);
-        int notScheduledProcessingTime = activity.getProcTime();
-        for (int i = 0; i < activity.getNumJobs(); i++) {
-            sTimesArList.add(new ArrayList<>());
-            
-        }
-        
-        double[] sTimes = new double[nStartTimes];
-        int curNum = 0;
-        for (int i = 0; i < sTimesArList.size(); i++) {
-            for (int j = 0; j < sTimesArList.get(i).size(); j++) {
-                sTimes[curNum] = sTimesArList.get(i).get(j);
-                curNum++;
-            }
-        }
-        return sTimes;
-    }
-    
     public solutionOneAct solve() throws IloException{
-        // this.ModelToFile(Helpers.outputFileForModels);
-       
+        
+        // this.ModelToFile(Helpers.outputFileForModels);       
         if(activity.getJitter() < activity.getSlack() - 2){
             if(toBeSolvedByILP){
                 if(solverILP.solve()){
                     solutionOneAct problemSolutionForOneActivity = new solutionOneAct(solverILP.getValues(startTimeILP), activity);
+                    if(problemSolutionForOneActivity.getStartTimes()[0] == 17674){
+                        System.out.println("");
+                    }
                     return problemSolutionForOneActivity;
                 }
                 else{
@@ -767,12 +687,7 @@ public class SubModel extends ILP_model{
         }
         else{
             double[] sTimes;
-            if(CC_Scheduling_WithJitter.IS_PREEMPTION_ALLOWED_IN_HEURISTIC){
-                sTimes = solveNZJWithPreemption();
-            }
-            else{
-                sTimes = solveNZJ();
-            }
+            sTimes = solveNZJ();
             
             if(sTimes != null){
                 return new solutionOneAct(sTimes, activity);

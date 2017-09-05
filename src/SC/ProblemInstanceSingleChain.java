@@ -144,9 +144,7 @@ public class ProblemInstanceSingleChain implements Comparable<ProblemInstanceSin
         this.nResources = nResources;
     }
     
-    public ProblemInstanceSingleChain(int numberOfActivitysinChain, int[] activityAssignmentToResources, 
-            int RequiredPeriod, int RequiredEndToEnd, int RequiredJitter, int[] processingTimes,
-            int IdInInputData, int numOfStartActivityInTheChain, int nResources, int HP) {
+    public ProblemInstanceSingleChain(int numberOfActivitysinChain, int[] activityAssignmentToResources, int RequiredPeriod, int RequiredEndToEnd, int RequiredJitter, int[] processingTimes, int IdInInputData, int numOfStartActivityInTheChain, int nResources) {
         this.numberOfActivitys = numberOfActivitysinChain;
         this.activitysAssignmentToResources = activityAssignmentToResources;
         this.RequiredPeriod = RequiredPeriod;

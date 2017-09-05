@@ -92,9 +92,6 @@ public class ThreeLSheuristic {
             actsToSchedule.remove(actsToSchedule.indexOf(i));
             Activity activity = probInstSched.getActs()[i];
             
-            if(nIter == 6){
-                System.out.println("");
-            }
             
             //schedule activity by activity 
             subModel = new SubModel(activity, scheduledActs, CC_Scheduling_WithJitter.SOLVE_SUBMODEL_BY_ILP);
@@ -219,6 +216,11 @@ public class ThreeLSheuristic {
         
         subModel = new SubModel(probInstSched.getActs()[numActivityCurScheduled], 
                 scheduledActs, CC_Scheduling_WithJitter.SOLVE_SUBMODEL_BY_ILP);
+        
+        if(!subModel.isIsFeasible()){
+            return false;
+        }
+        
         subModel.scheduleWithTwoActivities(probInstSched.getActs()[numActivityToUnschedule]);
         
         solutionOneAct[] problemSolutionForTwoActivities = subModel.solveWithTwoActivities();

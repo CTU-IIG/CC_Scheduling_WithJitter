@@ -54,17 +54,18 @@ public class ProblemInstanceMapping{
     public ProblemInstanceMapping(String fileName, int nCores_) throws IOException {
         Scanner in = new Scanner(new File(fileName));
         nChains = Helpers.ReadIntegerNumber(in);
-        nCores = Helpers.ReadIntegerNumber(in);
         nCores = nCores_;
-        int totalNumRunnablesInChains = Helpers.ReadIntegerNumber(in);
-        memoryBoundOnECU = Helpers.ReadIntegerNumber(in);
-        utilizationBound = Helpers.ReadIntegerNumber(in) / 100.0;
+        memoryBoundOnECU = CC_Scheduling_WithJitter.MEMORY_BOUND;
+        //obsolete:
+        utilizationBound = CC_Scheduling_WithJitter.UTILIZATION_BOUND / 100.0;
         
         //!there is always one line between two data arrays!
         int[] numberOfActivitiesInChain = Helpers.ReadIntegerArray(in, nChains);
+        int totalNumRunnablesInChains = 0;
         numRunnablesInChains = new int[nChains];
         for(int i = 0; i < nChains; i++) {
             numRunnablesInChains[i] = numberOfActivitiesInChain[i] - ((int)Math.ceil(numberOfActivitiesInChain[i]/2.0) - 1);
+            totalNumRunnablesInChains += numRunnablesInChains[i];
         }
         
         runnablesInChains = Helpers.ReadIntegerArray(in, totalNumRunnablesInChains);
@@ -114,8 +115,6 @@ public class ProblemInstanceMapping{
         senderLabelReceiverNonOrderCriticalChains = Helpers.Read2DIntegerArray(in);
         numCommunications = senderLabelReceiveOrderCriticalChains.size() + senderLabelReceiverNonOrderCriticalChains.size();
         
-        jitters = Helpers.ReadIntegerArrayWithoutGivenLegth(in);
-        
         // create problem_instances for each chain
         // the scheduling entities are runnables and messages that are part of the chains (nChains)
         // and independent messages and runnables
@@ -131,25 +130,11 @@ public class ProblemInstanceMapping{
             }
             problemInstancesSingleChain[i] = new ProblemInstanceSingleChain(numberOfActivitiesInChain[i], 
                    null, periodsOfRunnables[runnablesInChains[curRunnable] - 1], 0, 0, 
-                   processingTimesForChains, i, curActivity, this.nCores, jitters[runnablesInChains[curRunnable] - 1]);
+                   processingTimesForChains, i, curActivity, this.nCores);
 
            curActivity += numberOfActivitiesInChain[i];
            curRunnable += this.numRunnablesInChains[i];
         }
-    }
-
-    // returns assignment of a given message on network
-    // simple first bin strategy, if no network is available returns -1
-    private int AssignmentOfCommunicationsOnNetworksForBuses(double[] utilizationOnNetworks, double utilizationOfMessage){
-        int assignment = -1;
-        for(int i = 0; i < utilizationOnNetworks.length; i++) {
-           if(utilizationOnNetworks[i] + utilizationOfMessage <= utilizationBound){
-               utilizationOnNetworks[i] += utilizationOfMessage;
-               assignment = i;
-               break;
-           }
-        }
-        return assignment;
     }
     
     // returns number of the last created activity + 1

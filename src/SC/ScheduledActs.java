@@ -97,22 +97,22 @@ public class ScheduledActs {
     private void AddNewResourceIntervalsWithConcatenation(int[] startTimes, int nSchedAct){
         Activity act = probInst.getActs()[nSchedAct];
         int nJobs = probInst.getHP() / act.getPeriod();
-    
+        System.out.println(numsSchedActs);
         for(int j = 0; j < nJobs; j++) {
             for(int i = 0; i < act.getProcTime(); i++) {
                 if(schedule[act.getMapping() - 1][(startTimes[j] + i) % probInst.getHP()] != 0){
                     //collision in the schedule
-                    int curValue = schedule[act.getMapping() - 1][(startTimes[j] + i) % probInst.getHP()] - 1;
+                    int curValue = probInst.getActs()[schedule[act.getMapping() - 1][(startTimes[j] + i) % probInst.getHP()] - 1].getIdInArray();
                     System.out.println("\n Collision in the schedule! Activities " + 
                             nSchedAct + " and " + curValue + " are colliding.\n");
                     System.out.println((startTimes[j] + i) % probInst.getHP());
-                    //System.exit(0);
+                    System.exit(0);
                 }
                 
                 schedule[act.getMapping() - 1][(startTimes[j] + i) % probInst.getHP()] = act.getIdInInputData() + 1;
             }
                     
-            List<Integer> newInterval;
+            List<Integer> newInterval; 
             if(startTimes[j] < probInst.getHP() && startTimes[j] + act.getProcTime() > probInst.getHP()){
                 newInterval = Arrays.asList(startTimes[j], probInst.getHP());
                 ConcatenateNewIntervalWithExisting(newInterval,  act.getMapping());
@@ -188,6 +188,9 @@ public class ScheduledActs {
     public List<Integer> UnscheduleActivity(int nUnschedInStartTimesArray){
         //if we unschedule activity that has scheduled successors, we need to unschedule successors as well.
         int actualNumOfActivity = numsSchedActs.get(nUnschedInStartTimesArray);
+        if(actualNumOfActivity == 14){
+            System.out.println("");
+        }
         List<Integer> ListToUnschedule = new ArrayList<>();
         List<Integer> outputList = new ArrayList<>();
         

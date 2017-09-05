@@ -51,12 +51,14 @@ import java.util.List;
 
 public class CC_Scheduling_WithJitter {
     static final int MIN_NUMB_INSTANCES = 1; //solving starts from problem_instance_{MIN_NUMB_INSTANCES}
-    static final int MAX_NUMB_INSTANCES = 1; //solving ends with problem_instance_{MAX_NUMB_INSTANCES}
+    static final int MAX_NUMB_INSTANCES = 100; //solving ends with problem_instance_{MAX_NUMB_INSTANCES}
     static final int N_CORES_MAIN_EXP = 3;
     static final boolean IS_GIVEN_MAPPING = false; //set true if the mapping is apready done in the problem instances
     public static int TIME_LIMIT = 3000; // time limit for the ILP model
     public static boolean IS_OPTIMAL = false; // indicate whether the obtained solution is optimal
     static final boolean IS_JITTER_RELATIVE = true;
+    static final int MEMORY_BOUND = 1048576;
+    static final int UTILIZATION_BOUND = 100;
     
     // only one of the following parameters can be true
     static final boolean IS_EXPERIMENT_WITH_DIF_PERCENTS_OF_ZJ_ACTS = false;
@@ -67,7 +69,6 @@ public class CC_Scheduling_WithJitter {
     static final boolean SOLVE_SUBMODEL_BY_ILP = true;
     static final boolean IS_VERBOSE = false;
     static final int COEFFICIENT_FOR_JITTER = 5;
-    static final boolean IS_PREEMPTION_ALLOWED_IN_HEURISTIC = false;
     static final int UNSCHED_RULE = 0;// 0 - described in the article, 1 - solely slack I
     
     static boolean is_exp_with_harmonic_periods;
@@ -77,7 +78,7 @@ public class CC_Scheduling_WithJitter {
     static long startTime; //start time of each run on each instance 
     static int numOcc = 0;
     
-    static final String instancePath = "instances/Set 2/problem_instance";
+    static final String instancePath = "instances/Set 5/problem_instance";
     //static final String instancePath = "/Users/annaminaeva/git/SC_problem_2016/SC problem Java/instances/problem_instance_CAN";
     //static final String instancePath = "/Users/annaminaeva/Dropbox/GeneratedModels/Set 6/problem_instance";
     //static final String instancePath = "/Users/annaminaeva/Dropbox/prace/SC problem related/instances/SET6/problem_instance6_";
@@ -370,7 +371,7 @@ public class CC_Scheduling_WithJitter {
                     }
                     for (opt_sol_method = 0; opt_sol_method < n_opt_solution_methods; opt_sol_method++) {
                         long currentRunTime = 0;
-                        for(double util_on_res = 0.7; util_on_res <= 1.01; util_on_res += 0.01) {
+                        for(double util_on_res = 0.4; util_on_res <= 1.01; util_on_res += 0.01) {
                             boolean result = PrepareProblemInstance(solve_with_zero_jitter, 
                                     util_on_res, instancePath + String.valueOf(t) + dat, N_CORES_MAIN_EXP);
                             if(!result){
